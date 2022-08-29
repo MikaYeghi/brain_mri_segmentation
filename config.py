@@ -1,0 +1,1 @@
+ROOT_PATH = "/home/yemika/Mikael/Code/Python/Kaggle/brain_mri_segmentation"
