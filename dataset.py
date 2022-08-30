@@ -23,12 +23,13 @@ class MRIDataset(Dataset):
 
     def __getitem__(self, index):
         def load_image(image_path, grayscale):
+            """NEED TO RESIZE THE IMAGES TO THE SAME SIZE"""
             if grayscale:
                 img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
             else:
                 img = cv2.imread(image_path)
                 img = img[...,::-1] # the image is loaded as a BGR -- convert it to RGB
-            img = torch.tensor(img.copy(), device=self.device, dtype=torch.int)
+            img = torch.tensor(img.copy(), device=self.device, dtype=torch.float)
             return img
         
         image_path = self.images[index]
