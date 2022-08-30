@@ -23,6 +23,10 @@ class MRIModel(nn.Module):
         self.device = device
         self.save_path = save_path
 
+        # Preprocessing info
+        self.mean = torch.tensor([23.3841, 21.2731, 22.3250], device=device)
+        self.std = torch.tensor([34.3730, 31.6041, 32.8448], device=device)
+
     def forward(self, x):
         return self.backbone(x)
 
@@ -30,8 +34,9 @@ class MRIModel(nn.Module):
         self.backbone = self.backbone.to(device)
     
     def preprocess(self, image):
-        image = image.cpu()
-        preprocessed_image = self.preprocessing(image).to(self.device)
+        # image = image.cpu()
+        # preprocessed_image = self.preprocessing(image).to(self.device)
+        preprocessed_image = (image - self.mean) / self.std
         return preprocessed_image
     
     def preprocess_batch(self, images_batch):
