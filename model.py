@@ -4,13 +4,13 @@ import torch
 import torch.nn as nn
 import os
 
-def init_backbone(in_channels, classes, encoder='resnet34', encoder_weights='imagenet', device='cuda', activation='softmax'):
+def init_backbone(in_channels, classes, encoder='resnet18', encoder_weights='imagenet', device='cuda', activation='softmax'):
     backbone = smp.Unet(
         encoder_name=encoder,
         encoder_weights=encoder_weights,
         in_channels=in_channels,
         classes=classes,
-        activation=activation
+        activation='sigmoid'
     )
     backbone = backbone.to(device)
     return backbone
@@ -19,7 +19,7 @@ class MRIModel(nn.Module):
     def __init__(self, backbone, device='cuda', save_path='saved_models/') -> None:
         super().__init__()
         self.backbone = backbone.to(device)
-        self.preprocessing = get_preprocessing_fn('resnet34', pretrained='imagenet')
+        self.preprocessing = get_preprocessing_fn('resnet18', pretrained='imagenet')
         self.device = device
         self.save_path = save_path
 

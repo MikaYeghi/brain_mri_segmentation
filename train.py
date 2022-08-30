@@ -2,7 +2,7 @@ import torch
 import os, glob
 from dataset import MRIDataset
 from torch.utils.data import DataLoader
-from segmentation_models_pytorch.losses import JaccardLoss
+from segmentation_models_pytorch.losses import JaccardLoss, DiceLoss
 from torch import optim
 from tqdm import tqdm
 import config
@@ -39,10 +39,10 @@ backbone = init_backbone(in_channels=3, classes=1, device=device)
 model = MRIModel(backbone=backbone, device=device, save_path=save_path)
 
 """Define the loss function and the optimizer"""
-loss_fn = JaccardLoss(
+loss_fn = DiceLoss(
     mode='binary'
 )
-optimizer = optim.SGD(
+optimizer = optim.Adam(
     model.parameters(),
     lr=lr
 )
