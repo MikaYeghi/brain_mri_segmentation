@@ -2,7 +2,11 @@ import segmentation_models_pytorch as smp
 from segmentation_models_pytorch.encoders import get_preprocessing_fn
 import torch
 import torch.nn as nn
+import cv2
 import os
+
+import pdb
+from matplotlib import pyplot as plt
 
 def init_backbone(in_channels, classes, encoder='resnet18', encoder_weights='imagenet', device='cuda', activation='softmax'):
     backbone = smp.Unet(
@@ -28,15 +32,15 @@ class MRIModel(nn.Module):
         self.std = torch.tensor([34.3730, 31.6041, 32.8448], device=device)
 
     def forward(self, x):
-        return self.backbone(x)
+        res = self.backbone(x)
+        res = torch.squeeze(res, 1)
+        return res
 
     def to(self, device):
         self.backbone = self.backbone.to(device)
     
     def preprocess(self, image):
-        # image = image.cpu()
-        # preprocessed_image = self.preprocessing(image).to(self.device)
-        preprocessed_image = (image - self.mean) / self.std
+        preprocessed_image = image / 255.
         return preprocessed_image
     
     def preprocess_batch(self, images_batch):
@@ -45,9 +49,10 @@ class MRIModel(nn.Module):
         return images_batch
     
     def save(self):
+        """Saves the model to a file."""
         path = os.path.join(self.save_path, "model.pt")
         torch.save(self.backbone.state_dict(), path)
     
     def load(self, path):
-        """TO DO"""
+        """Loads the model from a file."""
         pass
