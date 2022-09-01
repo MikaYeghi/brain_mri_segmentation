@@ -4,3 +4,5 @@ LR = 0.1
 N_EPOCHS = 30
 VAL_FREQ = 10
 SAVE_PATH = "saved_models/"
+MODEL_NAME = "model.pt"
+LOAD_MODEL = True

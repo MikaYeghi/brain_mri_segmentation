@@ -20,6 +20,8 @@ lr = config.LR
 n_epochs = config.N_EPOCHS
 save_path = config.SAVE_PATH
 val_freq = config.VAL_FREQ
+model_name = config.MODEL_NAME
+load_model = config.LOAD_MODEL
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 """Load the data set"""
@@ -41,6 +43,9 @@ val_loader = DataLoader(val_data, batch_size=batch_size)
 """Initialize the model"""
 backbone = init_backbone(in_channels=3, classes=1, device=device)
 model = MRIModel(backbone=backbone, device=device, save_path=save_path)
+if load_model:
+    model_path = os.path.join(save_path, model_name)
+    model.load(model_path)
 
 """Define the loss function and the optimizer"""
 loss_fn = FocalLoss(

@@ -55,4 +55,8 @@ class MRIModel(nn.Module):
     
     def load(self, path):
         """Loads the model from a file."""
-        pass
+        try:
+            self.backbone.load_state_dict(torch.load(path))
+            print("Model loaded successfully.")
+        except Exception as e:
+            print(e)
