@@ -3,3 +3,4 @@ data_small/
 raw_data/
 __pycache__/
 predictions/
+.vscode/
