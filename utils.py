@@ -19,12 +19,15 @@ def evaluate(model, image):
     with torch.no_grad():
         return model(image)
 
-def save_predictions(preds, path, rounded_save, k):
-    for pred in preds:
+def save_predictions(preds, masks, path, rounded_save, k):
+    for pred, mask in zip(preds, masks):
         if rounded_save:
             pred = torch.round(pred)
         pred *= 255
+        mask *= 255
         img_path = os.path.join(path, f"image_{k}.jpg")
+        mask_path = os.path.join(path, f"image_{k}_mask.jpg")
         k += 1
         cv2.imwrite(img_path, pred.cpu().numpy())
+        cv2.imwrite(mask_path, mask.cpu().numpy())
     return k

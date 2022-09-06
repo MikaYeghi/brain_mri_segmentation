@@ -4,3 +4,4 @@ raw_data/
 __pycache__/
 predictions/
 .vscode/
+saved_models/

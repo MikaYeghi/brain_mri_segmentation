@@ -2,6 +2,7 @@ import os
 import torch
 from dataset import MRIDataset
 from torch.utils.data import DataLoader
+import segmentation_models_pytorch as smp
 from tqdm import tqdm
 
 from model import init_backbone, MRIModel
@@ -39,6 +40,12 @@ model = MRIModel(backbone=backbone, device=device, save_path=save_path)
 saved_model_path = os.path.join(save_path, model_name)
 model.load(saved_model_path)
 
+"""Evaluation metric setup"""
+tp_total = torch.empty(0, 1).long().to(device)
+tn_total = torch.empty(0, 1).long().to(device)
+fp_total = torch.empty(0, 1).long().to(device)
+fn_total = torch.empty(0, 1).long().to(device)
+
 """Run inference"""
 for images_batch, masks_batch in tqdm(test_loader):
     images_batch = model.preprocess_batch(images_batch)
@@ -46,6 +53,18 @@ for images_batch, masks_batch in tqdm(test_loader):
     images_batch = images_batch.permute(0, 3, 1, 2)
 
     preds = evaluate(model, images_batch)
+    
+    # Evaluate
+    tp, fp, tn, fn = smp.metrics.get_stats(torch.unsqueeze(preds, 1), torch.unsqueeze(masks_batch, 1).long(), mode='binary', threshold=0.5)
+    tp_total = torch.cat((tp_total, tp))
+    tn_total = torch.cat((tn_total, tn))
+    fp_total = torch.cat((fp_total, fp))
+    fn_total = torch.cat((fn_total, fn))
 
     if save_preds:
-        k = save_predictions(preds, preds_path, rounded_save, k)
+        k = save_predictions(preds, masks_batch, preds_path, rounded_save, k)
+
+# Compute the IoU score
+iou_score = smp.metrics.iou_score(tp, fp, fn, tn, reduction="micro")
+
+print(f"IoU score: {round((iou_score * 100).item(), 4)}%.")

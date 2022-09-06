@@ -52,7 +52,7 @@ if load_model:
 loss_fn = FocalLoss(
     mode='binary',
     # alpha=0.85,
-    # alpha=0.5,
+    alpha=0.561,
     # gamma=5
 )
 
