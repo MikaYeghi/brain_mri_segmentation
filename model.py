@@ -8,13 +8,14 @@ import os
 import pdb
 from matplotlib import pyplot as plt
 
-def init_backbone(in_channels, classes, encoder='resnet18', encoder_weights='imagenet', device='cuda', activation='softmax'):
+def init_backbone(in_channels, classes, encoder='vgg11', encoder_weights='imagenet', device='cuda', activation='sigmoid'):
+    print(f"Initializing a backbone with {in_channels} input channels, {classes} output classes and {encoder} as the encoder.")
     backbone = smp.Unet(
         encoder_name=encoder,
         encoder_weights=encoder_weights,
         in_channels=in_channels,
         classes=classes,
-        activation='sigmoid'
+        activation=activation
     )
     backbone = backbone.to(device)
     return backbone
@@ -23,7 +24,7 @@ class MRIModel(nn.Module):
     def __init__(self, backbone, device='cuda', save_path='saved_models/') -> None:
         super().__init__()
         self.backbone = backbone.to(device)
-        self.preprocessing = get_preprocessing_fn('resnet18', pretrained='imagenet')
+        # self.preprocessing = get_preprocessing_fn('resnet18', pretrained='imagenet')
         self.device = device
         self.save_path = save_path
 

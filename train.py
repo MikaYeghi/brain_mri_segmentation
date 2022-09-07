@@ -23,6 +23,8 @@ save_path = config.SAVE_PATH
 val_freq = config.VAL_FREQ
 model_name = config.MODEL_NAME
 load_model = config.LOAD_MODEL
+scheduler_step = config.SCHEDULER_STEP
+encoder = config.ENCODER
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 """Load the data set"""
@@ -42,7 +44,7 @@ train_loader = DataLoader(train_data, batch_size=batch_size)
 val_loader = DataLoader(val_data, batch_size=batch_size)
 
 """Initialize the model"""
-backbone = init_backbone(in_channels=3, classes=1, device=device)
+backbone = init_backbone(in_channels=3, classes=1, device=device, encoder=encoder)
 model = MRIModel(backbone=backbone, device=device, save_path=save_path)
 if load_model:
     model_path = os.path.join(save_path, model_name)
@@ -51,12 +53,10 @@ if load_model:
 """Define the loss function and the optimizer"""
 loss_fn = FocalLoss(
     mode='binary',
-    # alpha=0.85,
-    alpha=0.561,
-    # gamma=5
+    alpha=0.562
 )
 
-optimizer = optim.SGD(
+optimizer = optim.Adam(
     model.parameters(),
     lr=lr
 )
@@ -86,8 +86,6 @@ for epoch in range(n_epochs):
         print("-" * 80)
 
     if (epoch + 1) % val_freq == 0:
-        if epoch != 0:
-            scheduler.step()
         print("Runnning validation...")
         with torch.no_grad():
             for images_batch, masks_batch in tqdm(val_loader):
@@ -103,5 +101,8 @@ for epoch in range(n_epochs):
 
         print("Saving the model...")
         model.save()
+    
+    if (epoch + 1) % scheduler_step == 0 and epoch != 0:
+        scheduler.step()
 
     print("-" * 80)

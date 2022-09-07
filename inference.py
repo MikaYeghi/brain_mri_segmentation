@@ -55,7 +55,7 @@ for images_batch, masks_batch in tqdm(test_loader):
     preds = evaluate(model, images_batch)
     
     # Evaluate
-    tp, fp, tn, fn = smp.metrics.get_stats(torch.unsqueeze(preds, 1), torch.unsqueeze(masks_batch, 1).long(), mode='binary', threshold=0.5)
+    tp, fp, fn, tn = smp.metrics.get_stats(torch.unsqueeze(preds, 1), torch.unsqueeze(masks_batch, 1).long(), mode='binary', threshold=0.5)
     tp_total = torch.cat((tp_total, tp))
     tn_total = torch.cat((tn_total, tn))
     fp_total = torch.cat((fp_total, fp))
@@ -65,6 +65,6 @@ for images_batch, masks_batch in tqdm(test_loader):
         k = save_predictions(preds, masks_batch, preds_path, rounded_save, k)
 
 # Compute the IoU score
-iou_score = smp.metrics.iou_score(tp, fp, fn, tn, reduction="micro")
+iou_score = smp.metrics.iou_score(tp_total, fp_total, fn_total, tn_total, reduction="micro")
 
-print(f"IoU score: {round((iou_score * 100).item(), 4)}%.")
+print(f"IoU score: {round((iou_score * 100).item(), 2)}%.")
