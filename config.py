@@ -10,6 +10,7 @@ VAL_FREQ = 5
 SAVE_PATH = "saved_models/"
 LOAD_MODEL = False              # For training only. Inference automatically loads SAVE_PATH/MODEL_NAME
 ENCODER = 'vgg11'
+FREEZE_ENCODER = True
 
 # Inference parameters
 SAVE_PREDS = True

@@ -7,7 +7,7 @@ from torch import optim
 from tqdm import tqdm
 import config
 
-from model import init_backbone, MRIModel
+from model import init_backbone, freeze_encoder, MRIModel
 from utils import make_train_step
 
 from matplotlib import pyplot as plt
@@ -25,6 +25,7 @@ model_name = config.MODEL_NAME
 load_model = config.LOAD_MODEL
 scheduler_step = config.SCHEDULER_STEP
 encoder = config.ENCODER
+FREEZE_ENCODER = config.FREEZE_ENCODER
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 """Load the data set"""
@@ -49,6 +50,9 @@ model = MRIModel(backbone=backbone, device=device, save_path=save_path)
 if load_model:
     model_path = os.path.join(save_path, model_name)
     model.load(model_path)
+if FREEZE_ENCODER:
+    freeze_encoder(model)
+model.params_info()
 
 """Define the loss function and the optimizer"""
 loss_fn = FocalLoss(
