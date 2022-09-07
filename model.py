@@ -20,12 +20,6 @@ def init_backbone(in_channels, classes, encoder='vgg11', encoder_weights='imagen
     backbone = backbone.to(device)
     return backbone
 
-def freeze_encoder(model):
-    for child in model.backbone.encoder.children():
-        for param in child.parameters():
-            param.requires_grad = False
-    return
-
 class MRIModel(nn.Module):
     def __init__(self, backbone, device='cuda', save_path='saved_models/') -> None:
         super().__init__()
@@ -67,7 +61,21 @@ class MRIModel(nn.Module):
             print(f"Model {path} loaded successfully.")
         except Exception as e:
             print(e)
+
+    def freeze_encoder(self):
+        print("Freezing the encoder.")
+        for child in self.backbone.encoder.children():
+            for param in child.parameters():
+                param.requires_grad = False
+        return
+
+    def unfreeze_encoder(self):
+        print("Unfreezing the encoder.")
+        for child in self.backbone.children():
+            for param in child.parameters():
+                param.requires_grad = True
+        return
     
-    def params_info(self):
+    def print_params_info(self):
         for name, param in self.named_parameters():
             print(f"Parameter name: {name}, requires_grad: {param.requires_grad}")

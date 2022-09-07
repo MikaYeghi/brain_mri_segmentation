@@ -7,7 +7,7 @@ from torch import optim
 from tqdm import tqdm
 import config
 
-from model import init_backbone, freeze_encoder, MRIModel
+from model import init_backbone, MRIModel
 from utils import make_train_step
 
 from matplotlib import pyplot as plt
@@ -51,7 +51,7 @@ if load_model:
     model_path = os.path.join(save_path, model_name)
     model.load(model_path)
 if FREEZE_ENCODER:
-    freeze_encoder(model)
+    model.freeze_encoder()
 
 """Define the loss function and the optimizer"""
 loss_fn = FocalLoss(
