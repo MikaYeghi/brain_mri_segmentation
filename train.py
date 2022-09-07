@@ -52,12 +52,11 @@ if load_model:
     model.load(model_path)
 if FREEZE_ENCODER:
     freeze_encoder(model)
-model.params_info()
 
 """Define the loss function and the optimizer"""
 loss_fn = FocalLoss(
     mode='binary',
-    alpha=0.562
+    alpha=0.564
 )
 
 optimizer = optim.Adam(

@@ -20,6 +20,7 @@ model_name = config.MODEL_NAME
 save_preds = config.SAVE_PREDS
 preds_path = config.PREDS_PATH
 rounded_save = config.ROUNDED_SAVE
+encoder = config.ENCODER
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 k = 0
 
@@ -35,7 +36,7 @@ print(f"Loaded a test data set with {len(test_data)} images.")
 test_loader = DataLoader(test_data, batch_size=batch_size)
 
 """Load the model"""
-backbone = init_backbone(in_channels=3, classes=1, device=device)
+backbone = init_backbone(in_channels=3, classes=1, device=device, encoder=encoder)
 model = MRIModel(backbone=backbone, device=device, save_path=save_path)
 saved_model_path = os.path.join(save_path, model_name)
 model.load(saved_model_path)
